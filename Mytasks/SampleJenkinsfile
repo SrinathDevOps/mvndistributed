@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+ tools {
+   maven 'Maven' 
+  }
+    stages {
+        stage('Checkout') {
+            steps {
+               checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'GIT_CRED', url: 'https://github.com/SrinathDevOps/mvndistributed.git']]])
+            }
+        }
+        stage('build') {
+            steps {
+               sh 'mvn clean package'
+            }
+        }
+        stage('Deploy') {
+            steps {
+               deploy adapters: [tomcat9(credentialsId: 'Tomcat_Cred', path: '', url: 'http://192.168.61.140:8092/')], contextPath: 'devops85.war', war: '**/*.war'
+            }
+        }
+    }
+}
