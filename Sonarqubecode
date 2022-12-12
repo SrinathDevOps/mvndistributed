@@ -1,0 +1,15 @@
+to run sonarqube server in docker use this command
+
+$docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
+
+install SonarQubescanner plugin from manage jenkins
+and configure it in the manage jenkins configure sysems .... for the usage of pipeline
+add credentials wiht manage credentials >secret text
+
+Add a name which will be used in pipeline and server URL where SonarQube is running and add credentials in Manage Credentials which is of type secret text. Add the SonarQube project token created earlier.
+
+username :admin
+password: srips
+
+reference:
+https://medium.com/@nanditasahu031/jenkins-pipeline-with-maven-sonarqube-and-talisman-fa9118910b98
