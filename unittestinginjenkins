@@ -1,0 +1,34 @@
+pipeline {
+    agent {
+  label 'jencentos'
+}
+
+    tools {
+  maven 'Maven' 
+  }
+    stages {
+        stage('Checkout') {
+            steps {
+               checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'GIT_CRED', url: 'https://github.com/SrinathDevOps/mvndistributed.git']]])
+            }
+        }
+        stage('build') {
+            steps {
+               sh 'mvn clean package'
+               sh 'mvn -s settings.xml -DskipTests install'
+               #for this the settings.xml file should in the node machine because we are running it in the node machine
+            }
+        }
+        stage('Test') {
+            steps {
+               sh 'mvn -s settings.xml test'
+            }
+        }
+        stage('Checkstyle Analysis') {
+            steps {
+               sh 'mvn -s settings.xml checkstyle:checkstyle'
+            }
+        }
+       
+    }
+}
