@@ -1,0 +1,53 @@
+pipeline {
+    agent {
+  label 'jencentos'
+}
+
+    tools {
+  maven 'Maven' 
+  }
+    stages {
+        stage('Checkout') {
+            steps {
+               checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'GIT_CRED', url: 'https://github.com/SrinathDevOps/mvndistributed.git']]])
+            }
+        }
+        
+        stage('build') {
+            steps {
+               sh 'mvn clean package'
+               archive 'target/*.jar'
+               sh 'mvn -s settings.xml -DskipTests install'
+            }
+        }
+         stage('Sonarqube Analysic -SAST') {
+            steps {
+               withSonarQubeEnv("SonarQube"){
+               sh "mvn clean verify sonar:sonar -Dsonar.projectKey=maven-jenkins-pipeline -Dsonar.host.url=http://192.168.61.153:9000 -Dsonar.login=sqp_4f76a43c16c246b61667b6e0a6c8303471dad732"
+               }
+            }
+        }
+        stage('Test') {
+            steps {
+               sh 'mvn -s settings.xml test'
+            }
+        }
+        stage('Test Maven-JUnit') {
+            steps {
+               sh 'mvn test'
+            }
+           /* post
+            {
+                always{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }*/
+        }
+        stage('Checkstyle Analysis') {
+            steps {
+               sh 'mvn -s settings.xml checkstyle:checkstyle'
+            }
+        }
+       
+    }
+}
