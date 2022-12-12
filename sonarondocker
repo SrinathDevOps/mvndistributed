@@ -1,0 +1,10 @@
+to run sonarqube server in docker use this command
+
+$docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
+
+enable the 9000 port
+
+firewall-cmd --zone=public --add-port=2888/tcp --permanent
+Then remember to reload the firewall for changes to take effect.
+
+firewall-cmd --reload
